@@ -334,7 +334,7 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
         
         // Define the vertical constraints
         let verticalConstraints = NSLayoutConstraint.constraintsWithVisualFormat(
-            "V:|-200-[textLabel]-[input]-[getData]-[title]",
+            "V:|-200-[textLabel]-25-[input]-25-[getData]-25-[title]",
             options: [],
             metrics: nil,
             views: viewsDictionary)
