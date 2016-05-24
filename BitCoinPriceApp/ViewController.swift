@@ -2,12 +2,29 @@
 
 import UIKit
 
+extension UIView
+{
+    func centerHorizontallyInSuperview()
+    {
+        let c: NSLayoutConstraint = NSLayoutConstraint(item: self,
+                                                       attribute: NSLayoutAttribute.CenterX,
+                                                       relatedBy: NSLayoutRelation.Equal,
+                                                       toItem: self.superview,
+                                                       attribute: NSLayoutAttribute.CenterX,
+                                                       multiplier:1,
+                                                       constant: 0)
+        
+        // Add this constraint to the superview
+        self.superview?.addConstraint(c)
+    }
+}
 class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
 {
     
     // Views that need to be accessible to all methods
     let jsonResult = UILabel()
     let inputGiven = UITextField(frame: CGRect(x: 0, y: 0, width: 300, height: 30))
+    let descriptionTitle = UILabel()
     //    let countryPicker = UIPickerViewDelegate()
     // make variables to store the info
     var jsonCurrency = ""
@@ -101,7 +118,7 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
             // (must be done asynchronously)
             dispatch_async(dispatch_get_main_queue())
             {
-                self.jsonResult.text = "The currency is the \(self.jsonCurrency)\n and one BitCoin is $\(self.jsonRate)"
+                self.jsonResult.text = "The currency is the \(self.jsonCurrency)\nand one BitCoin is \(self.jsonRate) \(self.jsonCurrency)'s"
             }
         } catch let error as NSError {
             print ("Failed to load: \(error.localizedDescription)")
@@ -222,7 +239,7 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
         // own version of viewDidLoad()
         super.viewDidLoad()
         
-        // Make the view's background be gray
+        // Make the view's background be yellow
         view.backgroundColor = UIColor.yellowColor()
         
         /*
@@ -244,6 +261,24 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
         view.addSubview(jsonResult)
         
         /*
+         * Define the label
+         */
+        
+        // Set font and text
+        descriptionTitle.text = "Enter currency code here."
+        descriptionTitle.font = UIFont.systemFontOfSize(18)
+        descriptionTitle.numberOfLines = 0
+        
+        // Set alignment
+        descriptionTitle.textAlignment = NSTextAlignment.Center
+        
+        // Required to autolayout this label
+        descriptionTitle.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Add to the superview
+        view.addSubview(descriptionTitle)
+        
+        /*
          * Add a button
          */
         let getData = UIButton(frame: CGRect(x: 0, y: 0, width: 150, height: 30))
@@ -257,11 +292,15 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
         // Required to auto layout this button
         getData.translatesAutoresizingMaskIntoConstraints = false
         
+        // Set the button color
+//        getData.titleLabel!.textColor = UIColor.greenColor()
+        getData.setTitleColor(UIColor.blueColor(), forState: UIControlState.Normal)
+        
         // Add the button into the super view
         view.addSubview(getData)
         
         /*
-         * Add a label
+         * Add a textfield
          */
         inputGiven.borderStyle = UITextBorderStyle.RoundedRect
         inputGiven.font = UIFont.systemFontOfSize(15)
@@ -290,11 +329,12 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
         let viewsDictionary : [String : AnyObject] = [
             "title": jsonResult,
             "getData": getData,
-            "input": inputGiven]
+            "input": inputGiven,
+            "textLabel": descriptionTitle]
         
         // Define the vertical constraints
         let verticalConstraints = NSLayoutConstraint.constraintsWithVisualFormat(
-            "V:|-50-[getData]-[input]-[title]",
+            "V:|-200-[textLabel]-[input]-[getData]-[title]",
             options: [],
             metrics: nil,
             views: viewsDictionary)
@@ -302,9 +342,14 @@ class ViewController : UIViewController, UIPickerViewDelegate, UIPickerViewDataS
         // Add the vertical constraints to the list of constraints
         allConstraints += verticalConstraints
         
+        // center all of the views horizontally
+        jsonResult.centerHorizontallyInSuperview()
+        getData.centerHorizontallyInSuperview()
+        inputGiven.centerHorizontallyInSuperview()
+        descriptionTitle.centerHorizontallyInSuperview()
+        
         // Activate all defined constraints
         NSLayoutConstraint.activateConstraints(allConstraints)
-        
     }
     
 }
